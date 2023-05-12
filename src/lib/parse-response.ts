@@ -6,19 +6,20 @@ export function parseCluesAndAnswers(text: string) {
     // Remove the leading number and dot.
     const lineWithoutNumber = line.split(".").slice(1).join(".").trim()
 
-    // Split the remaining line into the language name and the clue.
-    const [clue, answer] = lineWithoutNumber.split("-").map((part) => part.trim())
+    const [word, clue] = lineWithoutNumber.split("Clue:")
+    const [rest, answer] = word.split("Word:")
 
-    if (!answer) {
+    if (!answer || !clue) {
       return
     }
 
     console.log(" answer =========>", answer)
+    console.log(" rest =========>", rest)
     console.log(" clue =========>", clue)
 
     return {
-      answer,
-      clue,
+      answer: answer.trim(),
+      clue: clue.trim(),
       length: answer.length,
     }
   })

@@ -20,14 +20,13 @@ type Board = {
 }
 
 const Gameboard: NextPage = () => {
-  const { theme } = router.query
-
   const [loading, setLoading] = useState(false)
   const [board, setBoard] = useState<Board[][]>([])
   const [clues, setClues] = useState<string[]>([])
   const [openAIKey, setOpenAiKey] = useState("")
   const [error, setError] = useState("")
   const [gameStarted, setGameStarted] = useState(false)
+  const [theme, setTheme] = useState("")
 
   const loadFromStorage = () => {
     const openAIKey = window.sessionStorage.getItem("openai-key")
@@ -36,15 +35,18 @@ const Gameboard: NextPage = () => {
     }
   }
 
+  const setThemeStorage = (theme: string) => {
+    window.sessionStorage.setItem("theme", theme)
+  }
+
   async function startGame() {
     setLoading(true)
 
     try {
-      const data = await generateCrosswordCluesAndAnswer(theme as string, openAIKey)
-
-      console.log(data)
+      const data = await generateCrosswordCluesAndAnswer(theme, openAIKey)
       const answers = data.map((element) => element?.answer)
       const clues = data.map((element) => element?.clue)
+      console.log(clues)
       const newBoard = generateCrosswordBoard(answers as string[]) as unknown
       setBoard(newBoard as [][])
       setClues(clues as string[])
@@ -77,7 +79,16 @@ const Gameboard: NextPage = () => {
 
   useEffect(() => {
     loadFromStorage()
-  }, [])
+    if (!router.query.theme) {
+      const loadTheme = window.sessionStorage.getItem("theme")
+      if (loadTheme) {
+        setTheme(loadTheme)
+      }
+    } else {
+      setTheme(router.query.theme as string)
+      setThemeStorage(theme)
+    }
+  }, [theme])
 
   return (
     <div className="flex flex-col space-y-4 min-h-screen">
@@ -119,7 +130,7 @@ const Gameboard: NextPage = () => {
           <div className="animate-spin rounded-full mt-3 h-32 w-32 border-b-2 border-sky-900"></div>
         </div>
       ) : (
-        <div className="flex space-x-2 w-full justify-center">
+        <div className="flex space-x-2 w-full justify-center mt-16">
           <div id="gameBoard" className="grid grid-flow-row auto-rows-max">
             {board.map((row: any, rowIndex) => (
               <div key={rowIndex} className="grid-row">
@@ -140,8 +151,8 @@ const Gameboard: NextPage = () => {
           </div>
           <div id="clues" className="ml-24">
             <ol>
-              {clues.map((element: any, index) => (
-                <li key={index}>{element.clue}</li>
+              {clues.map((element: string, index) => (
+                <li key={index}>{element}</li>
               ))}
             </ol>
           </div>
