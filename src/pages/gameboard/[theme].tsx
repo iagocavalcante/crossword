@@ -13,12 +13,18 @@ import { ChangeEvent, useEffect, useState } from "react"
 import { generateCrosswordBoard } from "@/lib/generate-crossword-board"
 import { generateCrosswordCluesAndAnswer } from "@/lib/handle-generate-crossword"
 
+type Board = {
+  letter: string
+  row: number
+  col: number
+}
+
 const Gameboard: NextPage = () => {
   const { theme } = router.query
 
   const [loading, setLoading] = useState(false)
-  const [board, setBoard] = useState([])
-  const [clues, setClues] = useState([])
+  const [board, setBoard] = useState<Board[][]>([])
+  const [clues, setClues] = useState<string[]>([])
   const [openAIKey, setOpenAiKey] = useState("")
   const [error, setError] = useState("")
   const [gameStarted, setGameStarted] = useState(false)
@@ -38,9 +44,10 @@ const Gameboard: NextPage = () => {
 
       console.log(data)
       const answers = data.map((element) => element?.answer)
-      const newBoard = generateCrosswordBoard(answers) as any
-      setBoard(newBoard)
-      setClues(data)
+      const clues = data.map((element) => element?.clue)
+      const newBoard = generateCrosswordBoard(answers as string[]) as unknown
+      setBoard(newBoard as [][])
+      setClues(clues as string[])
       setGameStarted(true)
     } catch (error) {
       setError(error as string)
@@ -56,7 +63,7 @@ const Gameboard: NextPage = () => {
     event: ChangeEvent<HTMLInputElement>,
   ) => {
     const letter = event.target.value.toUpperCase()
-    const correctLetter = board[rowIndex][colIndex].letter
+    const correctLetter = board[rowIndex][colIndex as number].letter
     const cellElement = event.target
 
     if (letter === correctLetter) {
