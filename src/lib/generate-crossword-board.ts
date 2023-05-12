@@ -1,16 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 export function generateCrosswordBoard(answers: string[]) {
-  // Create a 15x15 board.
-  const board = new Array(15)
-    .fill(null)
-    .map(() => new Array(15).fill({ letter: "", isPartOfWord: false }))
-
-  // Sort the answers by length in descending order.
   answers.sort((a, b) => b.length - a.length)
 
   // Place the longest word in the middle of the board.
   const longestAnswer = answers[0]
+  // Create a 15x15 board.
+  const board = new Array(longestAnswer.length)
+    .fill(null)
+    .map(() =>
+      new Array(longestAnswer.length).fill({ letter: "", isPartOfWord: false }),
+    )
+
+  // Sort the answers by length in descending order.
   const startRow = Math.floor((board.length - longestAnswer.length) / 2)
   const startCol = Math.floor(board.length / 2)
 
