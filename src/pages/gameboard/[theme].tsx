@@ -13,7 +13,7 @@ import { ChangeEvent, useEffect, useState } from "react"
 import { generateCrosswordBoard } from "@/lib/generate-crossword-board"
 import { generateCrosswordCluesAndAnswer } from "@/lib/handle-generate-crossword"
 
-type Board = {
+export interface Board {
   letter: string
   row: number
   col: number
